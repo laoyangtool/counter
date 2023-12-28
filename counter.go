@@ -20,6 +20,7 @@ type Counter struct {
 	cleanupTime time.Duration
 }
 
+// NewCounter 创建一个统计技术器
 func NewCounter(cleanupTime ...time.Duration) *Counter {
 	counter := &Counter{
 		accessMap:   make(map[time.Time]int64),
