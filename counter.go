@@ -37,6 +37,7 @@ func NewCounter(cleanupTime ...time.Duration) *Counter {
 }
 
 func (c *Counter) Close() {
+	_ = recover() //忽略关闭错误
 	close(c.done)
 	c.ticker.Stop()
 }
