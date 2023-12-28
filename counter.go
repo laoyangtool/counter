@@ -14,7 +14,7 @@ import (
 
 type Counter struct {
 	accessMap   map[time.Time]int64
-	mutex       sync.Mutex
+	rwMutex     sync.RWMutex
 	ticker      *time.Ticker
 	done        chan struct{}
 	cleanupTime time.Duration
@@ -44,14 +44,14 @@ func (c *Counter) Close() {
 }
 
 func (c *Counter) Add(count int64) {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
+	c.rwMutex.Lock()
 	c.accessMap[time.Now()] += count
+	c.rwMutex.Unlock()
 }
 
 func (c *Counter) Count(duration time.Duration) int64 {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
+	c.rwMutex.RLock()
+	defer c.rwMutex.RUnlock()
 
 	// 获取当前时间
 	now := time.Now()
@@ -73,7 +73,7 @@ func (c *Counter) cleanupOldData() {
 	for {
 		select {
 		case <-c.ticker.C:
-			c.mutex.Lock()
+			c.rwMutex.Lock()
 
 			// 获取当前时间
 			now := time.Now()
@@ -88,7 +88,7 @@ func (c *Counter) cleanupOldData() {
 				}
 			}
 
-			c.mutex.Unlock()
+			c.rwMutex.Unlock()
 		case <-c.done:
 			return
 		}
