@@ -10,9 +10,13 @@ package counter
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 func TestName(t *testing.T) {
-	Add("test", 1)
-	fmt.Println(Count("test", 1))
+	cc := NewCounter()
+	cc.Add(1)
+	fmt.Println(cc.Count(time.Second))
+	fmt.Println(cc.Count(time.Second))
+	fmt.Println(cc.Count(time.Second))
 }
